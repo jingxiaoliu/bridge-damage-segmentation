@@ -1,0 +1,1 @@
+python3 damage_detection/train_local.py --nw resnest --cp configs/resnest/deeplabv3_s101-d8_512x1024_80k_cityscapes.py --bs 4 --data_root /data/shm/Tokaido_dataset --work_dir /data/shm/checkpoints/dm_resnest
