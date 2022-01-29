@@ -37,6 +37,7 @@ The following table reports IoUs for damage segmentation of real scene images.
 | Ensemble                                         |      0.235      |     0.365     |  0.300  |
 | Ensemble + Importance sampling                   |      0.340      |     0.557     |  0.448  |
 | Ensemble + Importance sampling + Multi-scale TTA |      0.350      |     0.583     |  0.467  |
+| Ensemble + Importance sampling + Multi-scale TTA + Mask |      0.379      |     0.587     |  0.483  |
 
 # Environment
 The code is developed under the following configurations.
@@ -82,8 +83,62 @@ The code is developed under the following configurations.
 5. Download the Tokaido dataset from [IC-SHM Challenge 2021](https://sail.cive.uh.edu/ic-shm2021/).
 
 ### Training
+1. Example single model training using multiple GPUs
+    ```sh
+    $ python3 -m torch.distributed.launch --nproc_per_node=2 --nnodes=2 --master_port=$RANDOM ./apis/train_damage_real.py \
+      --nw hrnet \
+      --cp $CHECKPOINT_DIR \
+      --dr $DATA_ROOT \
+      --conf $MODEL_CONFIG \
+      --bs 16 \
+      --train_split $TRAIN_SPLIT_PATH \
+      --val_split $VAL_SPLIT_PATH \
+      --width 1920 \
+      --height 1080 \
+      --distributed \
+      --iter 100000 \
+      --log_iter 10000 \
+      --eval_iter 10000 \
+      --checkpoint_iter 10000 \
+      --multi_loss \
+      --ohem \
+      --job_name dmg
+    ```
+2. Example shell script for preparing the whole dataset and train all models for the whole pipeline.
+    ```sh
+    $ ./scripts/main_training_script.sh
+    ```
 
 ### Evlauation
+1. Eval one model
+    ```sh
+    $ python3 ./test/test.py \
+      --nw hrnet \
+      --task single \
+      --cp $CONFIG_PATH \
+      --dr $DATA_ROOT \
+      --split_csv $RAW_CSV_PATH \
+      --save_path $OUTPOUT_DIR \
+      --img_dir $INPUT_IMG_DIR \
+      --ann_dir $INPUT_GT_DIR \
+      --split $TEST_SPLIT_PATH \
+      --type cmp \
+      --width 640 \
+      --height 360
+    ```
+2. Example shell script for testing the whole pipeline and generate the output using the IC-SHM Challenge format.
+    ```sh
+    $ ./scripts/main_testing_script.sh
+    ```
+
+3. Visualization (Add the `--cmp` flag when visualizing components.)
+    ```sh
+    $ ./modules/viz_label.py \
+      --input $SEG_DIR
+      --output $OUTPUT_DIR
+      --raw_input $IMG_DIR
+      --cmp 
+    ```
 
 # Reference
 If you find the code useful, please cite the following paper.
