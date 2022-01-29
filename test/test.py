@@ -37,7 +37,7 @@ torch.manual_seed(0)
 import argparse
 
 # Testing arguments, check the help message for details.
-parser = argparse.ArgumentParser
+parser = argparse.ArgumentParser()
 parser.add_argument("--nw", type=str, default='pspnet', help="Network name.")
 parser.add_argument("--nss", type=int, default=0, help="Cross validation subsets starting number.")
 parser.add_argument("--nse", type=int, default=1, help="Cross validation subsets ending number.")
