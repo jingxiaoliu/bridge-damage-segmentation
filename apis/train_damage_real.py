@@ -18,8 +18,8 @@ from random import randint
 parser = argparse.ArgumentParser()
 parser.add_argument("--nw", type=str, required=True,
                     help="Network name.")
-parser.add_argument("--cp", type=str, required=True,
-                    help="Config path.")
+parser.add_argument("--conf", type=str, required=True,help="Config path.")
+parser.add_argument("--cp", type=str, required=True,help="checkpoint path.")
 parser.add_argument("--bs", type=int, required=True,
                     help="Batch size.")
 parser.add_argument("--local_rank", type=int, help="")
@@ -223,7 +223,7 @@ def generate_config(config_path):
 
 def main():
     # Build the dataset
-    base_config = args.cp
+    base_config = args.conf
     cfg = generate_config(base_config)
     datasets = [build_dataset(cfg.data.train)]
 
