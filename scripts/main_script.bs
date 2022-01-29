@@ -15,11 +15,10 @@ python3 ./modules/data_prep.py --input $DATA_ROOT/files_train.csv --output $DATA
 python3 ./modules/data_prep.py --input $DATA_ROOT/files_puretex_train.csv --output $DATA_ROOT/splits --option split_puretex --data_root $DATA_ROOT --resampling 1
 
 # Training phase
-python3 -m torch.distributed.launch --nproc_per_node=2 --master_port=$RANDOM /apis/train_components.py --nw hrnet --cp $DATA_ROOT/checkpoints ~/research/icshm/ic-shm2021-p1/configs/hrnet/fcn_hr48_512x1024_40k_cityscapes.py --bs 2 --distributed --multi_loss --ohem --job_name hrnet_ohem$1 --split_id $1
+python3 -m torch.distributed.launch --nproc_per_node=2 --master_port=$RANDOM /apis/train_components.py --nw hrnet --cp $DATA_ROOT/checkpoints ~/research/icshm/ic-shm2021-p1/configs/hrnet/fcn_hr48_512x1024_40k_cityscapes.py --bs 2 --distributed --multi_loss --ohem --job_name hrnet_ohem$1 --split_id 
 
 # Testing phase
 # Masking out non-column components
 python3 ./modules/data_prep.py --input $DATA_ROOT/img_syn_raw/train --output $DATA_ROOT/img_syn_raw/code_test/train_mask --split_csv $DATA_ROOT/splits/train_dmg0.txt --lbl_dir $DATA_ROOT/cmp_train_dmg/ --option mask_imgs
 python3 ./modules/data_prep.py --input $DATA_ROOT/img_syn_raw/train --output $DATA_ROOT/img_syn_raw/code_test/train_mask --split_csv $DATA_ROOT/splits/val_dmg0.txt --lbl_dir $DATA_ROOT/cmp_val_dmg/ --option mask_imgs
-python3 ./modules/data_prep.py --input $DATA_ROOT/img_syn_raw/test --output $DATA_ROOT/img_syn_raw/code_test/test_mask --split_csv $DATA_ROOT/splits/train_dmg0.txt --lbl_dir /home/groups/noh/icshm_data/cmp_train_dmg/ --option mask_imgs
-$DATA_ROOT/cmp_train_dmg/ 
+python3 ./modules/data_prep.py --input $DATA_ROOT/img_syn_raw/test --output $DATA_ROOT/img_syn_raw/code_test/test_mask --split_csv $DATA_ROOT/splits/test_dmg.txt --lbl_dir $DATA_ROOT/cmp_test_dmg/ --option mask_imgs

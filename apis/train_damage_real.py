@@ -23,6 +23,8 @@ parser.add_argument("--conf", type=str, required=True,help="Config path.")
 parser.add_argument("--cp", type=str, required=True,help="checkpoint path.")
 parser.add_argument("--bs", type=int, required=True,
                     help="Batch size.")
+parser.add_argument("--train_split", type=str, required=True, help="Split file for training")
+parser.add_argument("--val_split", type=str, required=True, help="Split file for testing")
 parser.add_argument("--local_rank", type=int, help="")
 parser.add_argument("--width", type=int, default=640, help='Image width. ')
 parser.add_argument("--height", type=int, default=360, help='Image height. ')
@@ -37,8 +39,6 @@ parser.add_argument("--ohem", action='store_true')
 parser.add_argument("--multi_loss", action='store_true')
 parser.add_argument("--nlr", type=float, default=1.0, help='Set different learning rate for backbone and head.')
 parser.add_argument("--job_name", type=str, default='', help="job name used in sbatch to create folders.")
-parser.add_argument("--split_id", type=str, default='', help="which cross-validation split")
-parser.add_argument("--focal", action='store_true')
 args = parser.parse_args()
 
 # Concrete segmentation dataset: Two classes only.
@@ -61,11 +61,9 @@ num_classes = len(classes)
 batch_size = args.bs
 image_size = (1920,1080)
 img_dir = os.path.join('img_syn_raw', 'train_mask')
-img_dir_aug = os.path.join('dmg_aug_gt_100', 'img')
-ann_dir_aug = os.path.join('dmg_aug_gt_100', 'seg')
 ann_dir = os.path.join('synthetic', 'train', 'labdmg_resize')
-train_split = 'splits/cmp_resampling/train_dmg'+args.split_id+'.txt'
-val_split = 'splits/cmp_resampling/val_dmg'+args.split_id+'.txt'
+train_split = args.train_split
+val_split = args.val_split
 checkpoint_dir = args.cp
 dt_string = datetime.now().strftime("%Y%m%d-%H%M%S")
 job_name = args.job_name + "_" + args.nw + "_" + dt_string

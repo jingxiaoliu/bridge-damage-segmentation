@@ -21,6 +21,8 @@ parser.add_argument("--nw", type=str, required=True,help="Network name.")
 parser.add_argument("--conf", type=str, required=True,help="Config path.")
 parser.add_argument("--cp", type=str, required=True,help="checkpoint path.")
 parser.add_argument("--dr", type=str, required=True,help="Data root.")
+parser.add_argument("--train_split", type=str, required=True, help="Split file for training")
+parser.add_argument("--val_split", type=str, required=True, help="Split file for testing")
 parser.add_argument("--bs", type=int, required=True,help="Batch size.")
 parser.add_argument("--width", type=int, default=640, help='Image width. ')
 parser.add_argument("--height", type=int, default=360, help='Image height. ')
@@ -34,7 +36,6 @@ parser.add_argument("--learning_rate", type=float, help="Learning rate of the op
 parser.add_argument("--ohem", action='store_true')
 parser.add_argument("--multi_loss", action='store_true')
 parser.add_argument("--job_name", type=str, default='', help="job name used in sbatch to create folders.")
-parser.add_argument("--split_id", type=str, default='', help="which cross-validation split")
 args = parser.parse_args()
 
 # Concrete segmentation dataset: Two classes only.
@@ -57,8 +58,8 @@ batch_size = args.bs
 image_size = (args.width,args.height)
 img_dir = 'images_puretex'
 ann_dir = os.path.join('synthetic_puretex', 'labdmg_resize')
-train_split = 'splits/puretex_resampling/train_puretex.txt'
-val_split = 'splits/puretex_resampling/val_puretex.txt'
+train_split = args.train_split
+val_split = args.val_split
 checkpoint_dir = args.cp
 dt_string = datetime.now().strftime("%Y%m%d-%H%M%S")
 job_name = args.job_name + "_" + args.nw + "_" + dt_string
