@@ -38,14 +38,10 @@ import argparse
 
 # Testing arguments, check the help message for details.
 parser = argparse.ArgumentParser
-parser.add_argument("--nw", type=str, default='pspnet',
-					help="Network name.")
-parser.add_argument("--nss", type=int, default=0,
-					help="Cross validation subsets starting number.")
-parser.add_argument("--nse", type=int, default=1,
-					help="Cross validation subsets ending number.")
-parser.add_argument("--task", type=str, default='single',
-					help="Task name")
+parser.add_argument("--nw", type=str, default='pspnet', help="Network name.")
+parser.add_argument("--nss", type=int, default=0, help="Cross validation subsets starting number.")
+parser.add_argument("--nse", type=int, default=1, help="Cross validation subsets ending number.")
+parser.add_argument("--task", type=str, default='single', help="Task name")
 parser.add_argument("--cp", type=str, required=True, help="Config path.")
 parser.add_argument("--dr", type=str, required=True, help="Data root.")
 parser.add_argument("--split_csv", type=str, required=True, help="Split file.")
