@@ -40,7 +40,7 @@ The following table reports IoUs for damage segmentation of real scene images.
 
 # Environment
 The code is developed under the following configurations.
-- Hardware: >= 4 GPUs for training, >= 1 GPU for testing. The script supports sbatch training and testing on computer clusters.
+- Hardware: >= 2 GPUs for training, >= 1 GPU for testing. The script supports sbatch training and testing on computer clusters.
 - Software: 
   - System: Ubuntu 16.04.3 LTS 
   - CUDA >= 10.1
