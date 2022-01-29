@@ -75,7 +75,7 @@ if __name__ == '__main__':
 
 	# Eval using a single model
 	if task_name == 'single':
-		if args.type == 'dmg' | 'puretex':
+		if args.type == 'dmg' or 'puretex':
 			classes = ('Undefined','Undamaged', 'ConcreteDamage', 'ExposedRebar')
 			palette = [[0,0,0], [128, 128, 128], [129, 127, 38], [120, 69, 125]]
 		elif args.type == 'cmp':			
