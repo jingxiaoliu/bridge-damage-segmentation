@@ -33,8 +33,8 @@ python3 -m torch.distributed.launch --nproc_per_node=2 --master_port=$RANDOM ./a
 
 # Predicts structural components labels for training and validation data using hrnet
 # Change cross-validation subsets numbers if having cross-validation
-python3 ./test/test.py --nw hrnet --task single --cp /home/groups/noh/icshm_data/valid_checkpoints_cmp/hrnet/0/ --dr $DATA_ROOT --split_csv $DATA_ROOT/splits/train_dmg0.txt --save_path $DATA_ROOT/cmp_train_dmg --img_dir img_syn_raw/train_resize --ann_dir synthetic/train_labcmp --split splits/train_dmg0.txt --type cmp --width 640 --height 360
-python3 ./test/test.py --nw hrnet --task single --cp /home/groups/noh/icshm_data/valid_checkpoints_cmp/hrnet/0/ --dr $DATA_ROOT --split_csv $DATA_ROOT/splits/val_dmg0.txt --save_path $DATA_ROOT/cmp_train_dmg --img_dir img_syn_raw/train_resize --ann_dir synthetic/train_labcmp --split splits/val_dmg0.txt --type cmp --width 640 --height 360
+python3 ./test/test.py --nw hrnet --task single --cp $DATA_ROOT/valid_checkpoints_cmp/hrnet/0/ --dr $DATA_ROOT --split_csv $DATA_ROOT/splits/train_dmg0.txt --save_path $DATA_ROOT/cmp_train_dmg --img_dir img_syn_raw/train_resize --ann_dir synthetic/train_labcmp --split splits/train_dmg0.txt --type cmp --width 640 --height 360
+python3 ./test/test.py --nw hrnet --task single --cp $DATA_ROOT/valid_checkpoints_cmp/hrnet/0/ --dr $DATA_ROOT --split_csv $DATA_ROOT/splits/val_dmg0.txt --save_path $DATA_ROOT/cmp_train_dmg --img_dir img_syn_raw/train_resize --ann_dir synthetic/train_labcmp --split splits/val_dmg0.txt --type cmp --width 640 --height 360
 # Masking out non-column components for training and validation data
 python3 ./modules/data_prep.py --input $DATA_ROOT/img_syn_raw/train --output $DATA_ROOT/img_syn_raw/train_mask --split_csv $DATA_ROOT/splits/train_dmg0.txt --lbl_dir $DATA_ROOT/cmp_train_dmg/ --option mask_imgs
 python3 ./modules/data_prep.py --input $DATA_ROOT/img_syn_raw/train --output $DATA_ROOT/img_syn_raw/train_mask --split_csv $DATA_ROOT/splits/val_dmg0.txt --lbl_dir $DATA_ROOT/cmp_train_dmg/ --option mask_imgs

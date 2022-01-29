@@ -44,7 +44,7 @@ parser.add_argument("--nse", type=int, default=1, help="Cross validation subsets
 parser.add_argument("--task", type=str, default='single', help="Task name")
 parser.add_argument("--cp", type=str, required=False, help="Checkpoint path.")
 parser.add_argument("--dr", type=str, required=False, help="Data root.")
-parser.add_argument("--split_csv", type=str, required=False, help="Split file.")
+parser.add_argument("--split_csv", type=str, required=True, help="Split file.")
 parser.add_argument("--save_path", type=str, required=True, help="Prediction save path.")
 parser.add_argument("--img_dir", type=str, required=False, help="Image file directory.")
 parser.add_argument("--ann_dir", type=str, required=False, help="Label directory.")
@@ -75,21 +75,31 @@ if __name__ == '__main__':
 
 	# Eval using a single model
 	if task_name == 'single':
-		if args.type == 'dmg':
+		if args.type == 'dmg' | 'puretex':
 			classes = ('Undefined','Undamaged', 'ConcreteDamage', 'ExposedRebar')
 			palette = [[0,0,0], [128, 128, 128], [129, 127, 38], [120, 69, 125]]
 		elif args.type == 'cmp':			
 			classes = ('Undefined', 'Nonbridge', 'Slab', 'Beam', 'Column', 'Nonstructural', 'Rail', 'Sleeper', 'Other')
 			palette = [[0,0,0], [128, 128, 128], [129, 127, 38], [120, 69, 125], [53, 125, 34], 
 					   [0, 11, 123], [118, 20, 12], [122, 81, 25], [241, 134, 51]]
-		@DATASETS.register_module()
-		class TokaidoDataset(CustomDataset):
-			CLASSES = classes
-			PALETTE = palette
-			def __init__(self, split, **kwargs):
-				super().__init__(img_suffix='_Scene.png', seg_map_suffix='.bmp', 
-								 split=split, **kwargs)
-				assert path.exists(self.img_dir) and self.split is not None
+		if args.type == 'puretex':
+			@DATASETS.register_module()
+			class TokaidoDataset(CustomDataset):
+				CLASSES = classes
+				PALETTE = palette
+				def __init__(self, split, **kwargs):
+					super().__init__(img_suffix='.png', seg_map_suffix='.bmp', 
+									 split=split, **kwargs)
+					assert path.exists(self.img_dir) and self.split is not None
+		else:
+			@DATASETS.register_module()
+			class TokaidoDataset(CustomDataset):
+				CLASSES = classes
+				PALETTE = palette
+				def __init__(self, split, **kwargs):
+					super().__init__(img_suffix='_Scene.png', seg_map_suffix='.bmp', 
+									 split=split, **kwargs)
+					assert path.exists(self.img_dir) and self.split is not None
 		
 		cfg_file = glob.glob(checkpoint_path+'*.py')[0]
 		cfg = Config.fromfile(cfg_file)
