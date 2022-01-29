@@ -59,7 +59,7 @@ img_dir = os.path.join('img_syn_raw', 'train_resize')
 ann_dir = os.path.join('synthetic', 'train', 'labcmp')
 train_split = 'splits/cmp_resampling/train_cmp'+args.split_id+'.txt'
 val_split = 'splits/cmp_resampling/val_cmp'+args.split_id+'.txt'
-checkpoint_dir = '/home/groups/noh/icshm_data/checkpoints/augcmp/'+args.split_id
+checkpoint_dir = args.cp
 dt_string = datetime.now().strftime("%Y%m%d-%H%M%S")
 job_name = args.job_name + "_" + args.nw + "_" + dt_string
 network = args.nw
@@ -210,8 +210,8 @@ def generate_config(config_path):
     # dump config
     cfg.dump(os.path.join(cfg.work_dir,job_name + "_" + network+"_config.py"))
 
-    # # Let's have a look at the final config used for training
-    # print(f'Config:\n{cfg.pretty_text}')
+    # Have a look at the final config used for training
+    print(f'Config:\n{cfg.pretty_text}')
     return cfg
 
 def main():
