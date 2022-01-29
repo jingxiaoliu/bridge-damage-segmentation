@@ -24,6 +24,7 @@ parser.add_argument("--cp", type=str, required=True,help="checkpoint path.")
 parser.add_argument("--bs", type=int, required=True,
                     help="Batch size.")
 parser.add_argument("--dr", type=str, required=True, help="Data root.")
+parser.add_argument("--local_rank", type=int, help="")
 parser.add_argument("--train_split", type=str, required=True, help="Split file for training")
 parser.add_argument("--val_split", type=str, required=True, help="Split file for testing")
 parser.add_argument("--local_rank", type=int, help="")
