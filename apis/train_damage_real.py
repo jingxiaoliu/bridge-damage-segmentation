@@ -91,19 +91,6 @@ def generate_config(config_path):
         # cfg.model.decode_head.loss_decode.class_weight = class_weight
         cfg.model.auxiliary_head.num_classes = num_classes
         # cfg.model.auxiliary_head.loss_decode.class_weight = class_weight
-        if args.focal:
-            cfg.model.decode_head.loss_decode = dict(
-                                                type='FocalLoss',
-                                                use_sigmoid=True,
-                                                gamma=2.0,
-                                                alpha=0.25,
-                                                loss_weight=1.0)
-            cfg.model.auxiliary_head.loss_decode = dict(
-                                                type='FocalLoss',
-                                                use_sigmoid=True,
-                                                gamma=2.0,
-                                                alpha=0.25,
-                                                loss_weight=1.0)
         if network == 'swin':
             del cfg.model.backbone.pretrain_style
     elif network == 'ocrnet':
