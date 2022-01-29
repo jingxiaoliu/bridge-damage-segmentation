@@ -15,6 +15,7 @@ import argparse
 from datetime import datetime
 from random import randint
 
+# Training arguments, check the help message for details.
 parser = argparse.ArgumentParser()
 parser.add_argument("--nw", type=str, required=True,
                     help="Network name.")

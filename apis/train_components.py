@@ -15,6 +15,7 @@ import argparse
 from datetime import datetime
 from random import randint
 
+# Training arguments, check the help message for details.
 parser = argparse.ArgumentParser()
 parser.add_argument("--nw", type=str, required=True, help="Network name.")
 parser.add_argument("--conf", type=str, required=True,help="Config path.")
@@ -43,6 +44,7 @@ classes = ('Undefined', 'Nonbridge', 'Slab', 'Beam', 'Column', 'Nonstructural', 
 palette = [[0,0,0], [128, 128, 128], [129, 127, 38], [120, 69, 125], [53, 125, 34], 
            [0, 11, 123], [118, 20, 12], [122, 81, 25], [241, 134, 51]]
 
+# register dataset
 @DATASETS.register_module()
 class TokaidoDataset(CustomDataset):
     CLASSES = classes

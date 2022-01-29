@@ -36,6 +36,7 @@ CUDA_LAUNCH_BLOCKING=1
 torch.manual_seed(0)
 import argparse
 
+# Testing arguments, check the help message for details.
 parser = argparse.ArgumentParser
 parser.add_argument("--nw", type=str, default='pspnet',
 					help="Network name.")
@@ -76,6 +77,7 @@ if __name__ == '__main__':
 	print(test_images[0])
 	print("Testing images: ", len(test_images))
 
+	# Eval using a single model
 	if task_name == 'single':
 		if args.type == 'dmg':
 			classes = ('Undefined','Undamaged', 'ConcreteDamage', 'ExposedRebar')
@@ -92,7 +94,9 @@ if __name__ == '__main__':
 				super().__init__(img_suffix='_Scene.png', seg_map_suffix='.bmp', 
 								 split=split, **kwargs)
 				assert path.exists(self.img_dir) and self.split is not None
-		for k in range(args.nss,args.nse+1):
+		
+		# Cross validation
+		for k in range(args.nss, args.nse+1):
 			cfg_file = glob.glob(checkpoint_path+network+'/'+str(k)+'/*.py')[0]
 			cfg = Config.fromfile(cfg_file)
 			if args.slide:
@@ -106,6 +110,7 @@ if __name__ == '__main__':
 			cfg.data.test.ann_dir= args.ann_dir
 			cfg.data.test.split = args.split
 
+			# Multi-scale TTA.
 			cfg.data.test.pipeline[1]=dict(
 				type='MultiScaleFlipAug',
 				img_scale=(args.width, args.height),
@@ -166,6 +171,7 @@ if __name__ == '__main__':
 				img = Image.fromarray(outputs[j].astype(np.uint8)).resize((640,360))
 				img.save(save_file)
 
+	# Eval using majority vote
 	elif task_name == 'mode':
 		networks = ['hrnet','ocrnet','pspnet','resnest','swin']
 		# networks = ['hrnet','ocrnet','pspnet']

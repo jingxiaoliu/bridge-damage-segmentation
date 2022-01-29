@@ -15,6 +15,7 @@ from datetime import datetime
 import argparse
 from random import randint
 
+# Training arguments, check the help message for details.
 parser = argparse.ArgumentParser()
 parser.add_argument("--nw", type=str, required=True,help="Network name.")
 parser.add_argument("--conf", type=str, required=True,help="Config path.")
