@@ -41,13 +41,15 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--nw", type=str, default='pspnet',
 					help="Network name.")
 parser.add_argument("--nss", type=int, default=0,
-					help="Subsets starting.")
+					help="Cross validation subsets starting number.")
 parser.add_argument("--nse", type=int, default=1,
-					help="Subsets ending.")
+					help="Cross validation subsets ending number.")
 parser.add_argument("--task", type=str, default='single',
 					help="Task name")
-parser.add_argument("--split", type=str, default='0',
-					help="Split#")
+parser.add_argument("--cp", type=str, required=True, help="Config path.")
+parser.add_argument("--dr", type=str, required=True, help="Data root.")
+parser.add_argument("--split_csv", type=str, required=True, help="Split file.")
+parser.add_argument("--save_path", type=str, required=True, help="Prediction save path.")
 args = parser.parse_args()
 
 # dmg coding
@@ -127,28 +129,27 @@ def pred2kaggle(pred_path,csv_read,csv_write,im_col,lab_col,labels,select_col=No
 	return data
 
 if __name__ == '__main__':
-	checkpoint_path_cmp = '/home/groups/noh/icshm_data/valid_checkpoints_cmp/'
-	test_save_path = '/home/groups/noh/icshm_data/cmp_test/'
+	checkpoint_path_cmp = args.cp
+	test_save_path = save_path
 	network = args.nw
 	task_name = args.task
-	split_num = args.split
+
 	# Origanize dataset
-	data_root = '/home/groups/noh/icshm_data/data_proj1/Tokaido_dataset'
+	data_root = args.dr
 	train_file_csv = path.join(data_root, "files_train.csv")
 	test_file_csv = path.join(data_root, "files_test.csv")
+
 	test_images_cmp = []
+	split_csv = args.split_csv
+	with open(split_csv, 'r') as f:
+		lines = f.readlines()
+		for line in lines:
+			test_images_cmp.append(line.strip('\n'))
+	test_images_cmp = list(test_images_cmp)
+	print(test_images_cmp[0])
+	print("Testing images for damage detection: ", len(test_images_cmp))
 
 	if task_name == 'single':
-		split_csv = '/home/groups/noh/icshm_data/data_proj1/Tokaido_dataset/splits/test_cmp_'+split_num+'.txt'
-
-		# Ignore depth for the moment, we could preprocess depth in the future
-		with open(split_csv, 'r') as f:
-			lines = f.readlines()
-			for line in lines:
-				test_images_cmp.append(line.strip('\n'))
-		test_images_cmp = list(test_images_cmp)
-		print(test_images_cmp[0])
-		print("Testing images for damage detection: ", len(test_images_cmp))
 		# define class and plaette for better visualization
 		classes = ('Undefined', 'Nonbridge', 'Slab', 'Beam', 'Column', 'Nonstructural', 'Rail', 'Sleeper', 'Other')
 		palette = [[0,0,0], [128, 128, 128], [129, 127, 38], [120, 69, 125], [53, 125, 34], 
@@ -164,17 +165,15 @@ if __name__ == '__main__':
 		for k in range(args.nss,args.nse+1):
 			cfg_file = glob.glob(checkpoint_path_cmp+network+'/'+str(k)+'/*.py')[0]
 			cfg = Config.fromfile(cfg_file)
-			cfg.model.test_cfg.mode='slide'
-			cfg.model.test_cfg.stride = (64,64)
-			cfg.model.test_cfg.crop_size = (256,256)
+			# cfg.model.test_cfg.mode='slide'
+			# cfg.model.test_cfg.stride = (64,64)
+			# cfg.model.test_cfg.crop_size = (256,256)
 			cfg.model.pretrained = None
 			cfg.data.test.test_mode = True
 			cfg.data.test.data_root = data_root
-			# cfg.data.test.img_dir = 'img_syn_raw/test'
 			cfg.data.test.img_dir = 'img_syn_raw/test_resize'
 			cfg.data.test.ann_dir='synthetic/train/labcmp'
-			cfg.data.test.split = 'splits/test_cmp_'+split_num+'.txt'
-			# cfg.data.test.split = 'splits/test_cmp.txt'
+			cfg.data.test.split = 'splits/test_cmp.txt'
 
 			cfg.data.test.pipeline[1]=dict(
 				type='MultiScaleFlipAug',
@@ -234,24 +233,11 @@ if __name__ == '__main__':
 					os.makedirs(save_path)			    
 				save_file = save_path+test_images_cmp[j]+'.bmp'
 				out_img = outputs[j].astype(np.uint8)
-				# viz = labelViz(out_img, 9, CMP_CMAP)
-				# cv2.imwrite(save_file,viz)
 				img = Image.fromarray(out_img).resize((640,360))
 				img.save(save_file)
 
 	elif task_name == 'mode':
-		split_csv = '/home/groups/noh/icshm_data/data_proj1/Tokaido_dataset/splits/test_cmp.txt'
-
-		# Ignore depth for the moment, we could preprocess depth in the future
-		with open(split_csv, 'r') as f:
-			lines = f.readlines()
-			for line in lines:
-				test_images_cmp.append(line.strip('\n'))
-		test_images_cmp = list(test_images_cmp)
-		print(test_images_cmp[0])
-		print("Testing images for damage detection: ", len(test_images_cmp))
 		networks = ['hrnet','ocrnet','pspnet','resnest']
-		# networks = ['hrnet','ocrnet','pspnet']
 		num_subsets = args.nse - args.nss + 1
 		for i in tqdm(range(len(test_images_cmp))):
 			tmp_tensor = np.empty((len(networks)*num_subsets,360,640))
@@ -263,7 +249,6 @@ if __name__ == '__main__':
 			result = np.reshape(stats.mode(np.reshape(tmp_tensor[0:len(networks)*num_subsets,:,:],(len(networks)*num_subsets,360*640)),axis=0).mode,(360,640))
 			result = Image.fromarray(result.astype(np.uint8))
 			result.save(test_save_path+'ensemble/'+test_images_cmp[i]+'.bmp')
-			# cv2.imwrite(test_save_path+'ensemble/'+test_images_cmp[i]+'.bmp',result.astype(np.uint8))
 
 	elif task_name == 'label':
 		pred_path =  test_save_path+'ensemble/' #path to the folder that contains predicted masks

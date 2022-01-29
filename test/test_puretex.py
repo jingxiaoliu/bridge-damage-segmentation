@@ -40,13 +40,15 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--nw", type=str, default='pspnet',
 					help="Network name.")
 parser.add_argument("--nss", type=int, default=0,
-					help="Subsets starting.")
+					help="Cross validation subsets starting number.")
 parser.add_argument("--nse", type=int, default=1,
-					help="Subsets ending.")
+					help="Cross validation subsets ending number.")
 parser.add_argument("--task", type=str, default='single',
 					help="Task name")
-parser.add_argument("--split", type=str, default='0',
-					help="Split#")
+parser.add_argument("--cp", type=str, required=True, help="Config path.")
+parser.add_argument("--dr", type=str, required=True, help="Data root.")
+parser.add_argument("--split_csv", type=str, required=True, help="Split file.")
+parser.add_argument("--save_path", type=str, required=True, help="Prediction save path.")
 args = parser.parse_args()
 
 def mask2rle(img):
@@ -100,30 +102,28 @@ def pred2kaggle(pred_path,csv_read,csv_write,im_col,lab_col,labels,select_col=No
 	return data
 
 if __name__ == '__main__':
-	checkpoint_path_puretex = '/home/groups/noh/icshm_data/valid_checkpoints_puretex/'
-	test_save_path = '/home/groups/noh/icshm_data/puretex_test/'
+	checkpoint_path_puretex = args.cp
+	test_save_path = save_path
 	network = args.nw
 	task_name = args.task
+
 	# Origanize dataset
-	data_root = '/home/groups/noh/icshm_data/data_proj1/Tokaido_dataset'
+	data_root = args.dr
 	train_file_csv = path.join(data_root, "files_puretex_train.csv")
 	test_file_csv = path.join(data_root, "files_puretex_test.csv")
 	test_images = []
 
-	# Ignore depth for the moment, we could preprocess depth in the future
+	split_csv = args.split_csv
+	test_images = []
+	with open(split_csv, 'r') as f:
+		lines = f.readlines()
+		for line in lines:
+			test_images.append(line.strip('\n'))
+	test_images = list(test_images)
+	print(test_images[0])
+	print("Testing images for damage detection: ", len(test_images))
 
 	if task_name == 'single':
-		split_csv = '/home/groups/noh/icshm_data/data_proj1/Tokaido_dataset/splits/test_puretex_'+args.split+'.txt'
-		test_images = []
-
-		# Ignore depth for the moment, we could preprocess depth in the future
-		with open(split_csv, 'r') as f:
-			lines = f.readlines()
-			for line in lines:
-				test_images.append(line.strip('\n'))
-		test_images = list(test_images)
-		print(test_images[0])
-		print("Testing images for damage detection: ", len(test_images))
 		# define class and plaette for better visualization
 		classes = ('Undefined','Undamaged', 'ConcreteDamage', 'ExposedRebar')
 		palette = [[0,0,0], [128, 128, 128], [129, 127, 38], [120, 69, 125]]
@@ -145,10 +145,9 @@ if __name__ == '__main__':
 			cfg.model.pretrained = None
 			cfg.data.test.test_mode = True
 			cfg.data.test.data_root = data_root
-			# cfg.data.test.img_dir = 'images_puretex_resize'
 			cfg.data.test.img_dir = 'images_puretex'
 			cfg.data.test.ann_dir='synthetic_puretex/labdmg'
-			cfg.data.test.split = 'splits/test_puretex_'+args.split+'.txt'
+			cfg.data.test.split = 'splits/test_puretex.txt'
 
 			cfg.data.test.pipeline[1]=dict(
 				type='MultiScaleFlipAug',
@@ -211,19 +210,7 @@ if __name__ == '__main__':
 				img.save(save_file)
 
 	elif task_name == 'mode':
-		split_csv = '/home/groups/noh/icshm_data/data_proj1/Tokaido_dataset/splits/test_puretex.txt'
-		test_images = []
-
-		# Ignore depth for the moment, we could preprocess depth in the future
-		with open(split_csv, 'r') as f:
-			lines = f.readlines()
-			for line in lines:
-				test_images.append(line.strip('\n'))
-		test_images = list(test_images)
-		print(test_images[0])
-		print("Testing images for damage detection: ", len(test_images))
 		networks = ['hrnet','ocrnet','pspnet','resnest','swin']
-		# networks = ['hrnet','ocrnet','pspnet']
 		num_subsets = args.nse - args.nss + 1
 		for i in tqdm(range(len(test_images))):
 			tmp_tensor = np.empty((len(networks)*num_subsets,360,640))
@@ -232,77 +219,13 @@ if __name__ == '__main__':
 				for k in range(args.nss,args.nse+1):
 					tmp_tensor[idx,:,:] = Image.open(test_save_path+networks[j]+'/'+str(k)+'/'+test_images[i]+'.bmp')
 					idx+=1
-			# signif = [3,2,2]
-			# tmp = np.reshape(tmp_tensor[0:len(networks)*num_subsets,:,:],(len(networks)*num_subsets,360*640))
-			# res = np.zeros((360*640,1))
-			# # for p in range(360*640):
-			# # 	if 3 in tmp[:,p]:
-			# # 		res[p] = 3
-			# # 	elif 2 in tmp[:,p]:
-			# # 		res[p] = 2
-			# # 	elif 1 in tmp[:,p]:
-			# # 		res[p] = 1
-			# # 	else:
-			# # 		res[p] = 0
-			# # for p in range(360*640):
-			# # 	if len(np.where(tmp[:,p]==3))>=signif[2]:
-			# # 		res[p] = 3
-			# # 	elif len(np.where(tmp[:,p]==2))>signif[1]:
-			# # 		res[p] = 2
-			# # 	elif len(np.where(tmp[:,p]==1))>signif[0]:
-			# # 		res[p] = 1
-			# # 	else:
-			# # 		res[p] = 0
-			# for p in range(360*640):
-			# 	num1=0
-			# 	num2=0
-			# 	num3=0
-			# 	for q in range(len(networks)*num_subsets):
-			# 		if tmp[q,p]==3:
-			# 			num1+=1
-			# 		elif tmp[q,p]==2:
-			# 			num2+=1
-			# 		elif tmp[q,p]==1:
-			# 			num3+=1
-			# 		if num1>=signif[2]:
-			# 			res[p] = 3
-			# 			break
-			# 		elif num2>=signif[1]:
-			# 			res[p] = 2
-			# 			break
-			# 		elif num3>=signif[0]:
-			# 			res[p] = 1
-			# 			break
-			# if (sum(res==2)>=5) & (sum(res==2)<=100):
-			# 	for p in range(360*640):
-			# 		num1=0
-			# 		num2=0
-			# 		num3=0
-			# 		for q in range(len(networks)*num_subsets):
-			# 			if tmp[q,p]==3:
-			# 				num1+=1
-			# 			elif tmp[q,p]==2:
-			# 				num2+=1
-			# 			elif tmp[q,p]==1:
-			# 				num3+=1
-			# 			if num1>=signif[2]:
-			# 				res[p] = 3
-			# 				break
-			# 			elif num2>=1:
-			# 				res[p] = 2
-			# 				break
-			# 			elif num3>=signif[0]:
-			# 				res[p] = 1
-			# 				break
-
-			# result = np.reshape(res,(360,640))      
 			result = np.reshape(stats.mode(np.reshape(tmp_tensor[0:len(networks)*num_subsets,:,:],(len(networks)*num_subsets,360*640)),axis=0).mode,(360,640))
 			result = Image.fromarray(result.astype(np.uint8))
 
 			result.save(test_save_path+'ensemble/'+test_images[i]+'.bmp')
 
 	elif task_name == 'label':
-		pred_path =  test_save_path+'ocrnet/0/' #path to the folder that contains predicted masks			
+		pred_path =  test_save_path+'ensemble/' #path to the folder that contains predicted masks			
 		if not os.path.exists(pred_path):
 			os.makedirs(pred_path)
 		csv_path = data_root #path to the Tokaido Dataset folder
@@ -313,7 +236,7 @@ if __name__ == '__main__':
 		lab_col = 1
 		select_col = None
 		labels = [2,3]
-		csv_write = test_save_path+'component_submission_sample.csv'
+		csv_write = test_save_path+'puretex_submission_sample.csv'
 		pred2kaggle(pred_path,csv_read,csv_write,im_col,lab_col,labels,select_col)
 
 	
