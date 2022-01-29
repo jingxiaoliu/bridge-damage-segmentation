@@ -57,7 +57,7 @@ args = parser.parse_args()
 
 if __name__ == '__main__':
 	checkpoint_path = args.cp
-	test_save_path = save_path
+	test_save_path = args.save_path
 	network = args.nw
 	task_name = args.task
 	# Origanize dataset
