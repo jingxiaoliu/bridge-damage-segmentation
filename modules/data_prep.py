@@ -150,7 +150,6 @@ def splitbycase(in_dir, out_dir, data_root, seed=13, resampling=False):
                         repeat = 3
                 for r in range(repeat):
                     f.writelines(line + '\n')
-            print(n)
         with open(os.path.join(out_dir, 'val_dmg'+str(i)+'.txt'), 'w') as f:
             # select the rest as validation set
             f.writelines(line + '\n' for line in train_images_dmg_val)
