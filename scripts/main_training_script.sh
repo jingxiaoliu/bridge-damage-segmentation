@@ -1,5 +1,5 @@
 cd bridge-damage-segmentation/
-DATA_ROOT="/home/groups/noh/icshm_data/data_proj1/Tokaido_dataset"
+DATA_ROOT="/home/icshm_data/data_proj1/Tokaido_dataset" # Change this to your own data root
 
 
 # prepare data
