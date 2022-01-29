@@ -14,11 +14,11 @@ parser.add_argument("--input", type=str, required=True,
                     help="Input directory, usually the directory of images.")
 parser.add_argument("--output", type=str, required=True,
                     help="Output directory if there is any output")
-parser.add_argument("--data_root", type=str, required=True,
+parser.add_argument("--data_root", type=str, required=False,
                     help="Taikoda data root")
-parser.add_argument("--split_csv", type=str, required=True,
+parser.add_argument("--split_csv", type=str, required=False,
                     help="Split file")
-parser.add_argument("--lbl_dir", type=str, required=True,
+parser.add_argument("--lbl_dir", type=str, required=False,
                     help="Label directory")
 parser.add_argument("--width", type=int, default=1920)
 parser.add_argument("--height", type=int, default=1080)
