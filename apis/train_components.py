@@ -36,7 +36,6 @@ parser.add_argument("--learning_rate", type=float, help="Learning rate of the op
 parser.add_argument("--ohem", action='store_true')
 parser.add_argument("--multi_loss", action='store_true')
 parser.add_argument("--job_name", type=str, default='', help="job name used in sbatch to create folders.")
-parser.add_argument("--split_id", type=str, default='', help="which cross-validation split")
 args = parser.parse_args()
 
 # Concrete segmentation dataset: Two classes only.

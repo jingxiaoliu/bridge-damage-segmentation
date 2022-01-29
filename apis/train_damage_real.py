@@ -23,6 +23,7 @@ parser.add_argument("--conf", type=str, required=True,help="Config path.")
 parser.add_argument("--cp", type=str, required=True,help="checkpoint path.")
 parser.add_argument("--bs", type=int, required=True,
                     help="Batch size.")
+parser.add_argument("--dr", type=str, required=True, help="Data root.")
 parser.add_argument("--train_split", type=str, required=True, help="Split file for training")
 parser.add_argument("--val_split", type=str, required=True, help="Split file for testing")
 parser.add_argument("--local_rank", type=int, help="")
@@ -56,10 +57,10 @@ class TokaidoDataset(CustomDataset):
 
 
 # Setup config
-data_root = "/home/groups/noh/icshm_data/data_proj1/Tokaido_dataset"
+data_root = args.dr
 num_classes = len(classes)
 batch_size = args.bs
-image_size = (1920,1080)
+image_size = (args.width,args.height)
 img_dir = os.path.join('img_syn_raw', 'train_mask')
 ann_dir = os.path.join('synthetic', 'train', 'labdmg_resize')
 train_split = args.train_split
