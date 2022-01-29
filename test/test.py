@@ -91,81 +91,79 @@ if __name__ == '__main__':
 								 split=split, **kwargs)
 				assert path.exists(self.img_dir) and self.split is not None
 		
-		# Cross validation
-		for k in range(args.nss, args.nse+1):
-			cfg_file = glob.glob(checkpoint_path+network+'/'+str(k)+'/*.py')[0]
-			cfg = Config.fromfile(cfg_file)
-			if args.slide:
-				cfg.model.test_cfg.mode='slide'
-				cfg.model.test_cfg.stride = (128,128)
-				cfg.model.test_cfg.crop_size = (256,256)
-			cfg.model.pretrained = None
-			cfg.data.test.test_mode = True
-			cfg.data.test.data_root = data_root
-			cfg.data.test.img_dir = args.img_dir
-			cfg.data.test.ann_dir= args.ann_dir
-			cfg.data.test.split = args.split
+		cfg_file = glob.glob(checkpoint_path+'*.py')[0]
+		cfg = Config.fromfile(cfg_file)
+		if args.slide:
+			cfg.model.test_cfg.mode='slide'
+			cfg.model.test_cfg.stride = (128,128)
+			cfg.model.test_cfg.crop_size = (256,256)
+		cfg.model.pretrained = None
+		cfg.data.test.test_mode = True
+		cfg.data.test.data_root = data_root
+		cfg.data.test.img_dir = args.img_dir
+		cfg.data.test.ann_dir= args.ann_dir
+		cfg.data.test.split = args.split
 
-			# Multi-scale TTA.
-			cfg.data.test.pipeline[1]=dict(
-				type='MultiScaleFlipAug',
-				img_scale=(args.width, args.height),
-				img_ratios = [0.5,1.0,1.5,2.0],
-				flip=False,
-				transforms=[
-					dict(type='Resize', keep_ratio=True),
-					dict(type='RandomFlip'),
-					dict(
-						type='Normalize',
-						mean=[123.675, 116.28, 103.53],
-						std=[58.395, 57.12, 57.375],
-						to_rgb=True),
-					dict(type='ImageToTensor', keys=['img']),
-					dict(type='Collect', keys=['img'])
-				])
-			cfg.test_pipeline[1]=dict(
-				type='MultiScaleFlipAug',
-				img_scale=(args.width, args.height),
-				img_ratios = [0.5,1.0,1.5,2.0],
-				flip=False,
-				transforms=[
-					dict(type='Resize', keep_ratio=True),
-					dict(type='RandomFlip'),
-					dict(
-						type='Normalize',
-						mean=[123.675, 116.28, 103.53],
-						std=[58.395, 57.12, 57.375],
-						to_rgb=True),
-					dict(type='ImageToTensor', keys=['img']),
-					dict(type='Collect', keys=['img'])
-				])
+		# Multi-scale TTA.
+		cfg.data.test.pipeline[1]=dict(
+			type='MultiScaleFlipAug',
+			img_scale=(args.width, args.height),
+			img_ratios = [0.5,1.0,1.5,2.0],
+			flip=False,
+			transforms=[
+				dict(type='Resize', keep_ratio=True),
+				dict(type='RandomFlip'),
+				dict(
+					type='Normalize',
+					mean=[123.675, 116.28, 103.53],
+					std=[58.395, 57.12, 57.375],
+					to_rgb=True),
+				dict(type='ImageToTensor', keys=['img']),
+				dict(type='Collect', keys=['img'])
+			])
+		cfg.test_pipeline[1]=dict(
+			type='MultiScaleFlipAug',
+			img_scale=(args.width, args.height),
+			img_ratios = [0.5,1.0,1.5,2.0],
+			flip=False,
+			transforms=[
+				dict(type='Resize', keep_ratio=True),
+				dict(type='RandomFlip'),
+				dict(
+					type='Normalize',
+					mean=[123.675, 116.28, 103.53],
+					std=[58.395, 57.12, 57.375],
+					to_rgb=True),
+				dict(type='ImageToTensor', keys=['img']),
+				dict(type='Collect', keys=['img'])
+			])
 
-			dataset = build_dataset(cfg.data.test)
-			data_loader = build_dataloader(
-				dataset,
-				samples_per_gpu=1,
-				workers_per_gpu=cfg.data.workers_per_gpu,
-				dist=False,
-				shuffle=False)
+		dataset = build_dataset(cfg.data.test)
+		data_loader = build_dataloader(
+			dataset,
+			samples_per_gpu=1,
+			workers_per_gpu=cfg.data.workers_per_gpu,
+			dist=False,
+			shuffle=False)
 
-			# build the model and load checkpoint
-			model = build_segmentor(cfg.model, train_cfg=None, test_cfg=cfg.get('test_cfg'))
-			cp_file = glob.glob(checkpoint_path+network+'/'+str(k)+'/*.pth')[0]
-			checkpoint = load_checkpoint(model, cp_file, map_location='cpu')
-			model.CLASSES = classes
-			model.PALETTE = palette
-			model.cfg = cfg     
-			model.to('cuda')
-			model.eval()
-			model = MMDataParallel(model, device_ids=[0])
-			outputs = single_gpu_test(model, data_loader)    
-			for j in range(len(outputs)):
-				save_path = test_save_path+network+'/'+str(k)+'/'		
-				if not os.path.exists(save_path):
-					os.makedirs(save_path)
-				save_file = save_path+test_images[j]+'.bmp'
-				img = Image.fromarray(outputs[j].astype(np.uint8)).resize((640,360))
-				img.save(save_file)
+		# build the model and load checkpoint
+		model = build_segmentor(cfg.model, train_cfg=None, test_cfg=cfg.get('test_cfg'))
+		cp_file = glob.glob(checkpoint_path+'/*.pth')[0]
+		checkpoint = load_checkpoint(model, cp_file, map_location='cpu')
+		model.CLASSES = classes
+		model.PALETTE = palette
+		model.cfg = cfg     
+		model.to('cuda')
+		model.eval()
+		model = MMDataParallel(model, device_ids=[0])
+		outputs = single_gpu_test(model, data_loader)    
+		for j in range(len(outputs)):
+			save_path = test_save_path+network+'/'+str(k)+'/'		
+			if not os.path.exists(save_path):
+				os.makedirs(save_path)
+			save_file = save_path+test_images[j]+'.bmp'
+			img = Image.fromarray(outputs[j].astype(np.uint8)).resize((640,360))
+			img.save(save_file)
 
 	# Eval using majority vote
 	elif task_name == 'mode':
