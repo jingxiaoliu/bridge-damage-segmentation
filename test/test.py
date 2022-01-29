@@ -44,7 +44,7 @@ parser.add_argument("--nse", type=int, default=1, help="Cross validation subsets
 parser.add_argument("--task", type=str, default='single', help="Task name")
 parser.add_argument("--cp", type=str, required=False, help="Checkpoint path.")
 parser.add_argument("--dr", type=str, required=False, help="Data root.")
-parser.add_argument("--split_csv", type=str, required=True, help="Split file.")
+parser.add_argument("--split_csv", type=str, required=False, help="Split file.")
 parser.add_argument("--save_path", type=str, required=True, help="Prediction save path.")
 parser.add_argument("--img_dir", type=str, required=False, help="Image file directory.")
 parser.add_argument("--ann_dir", type=str, required=False, help="Label directory.")
