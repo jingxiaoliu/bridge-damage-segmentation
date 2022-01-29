@@ -16,7 +16,8 @@ python3 ./modules/data_prep.py --input $DATA_ROOT/files_puretex_train.csv --outp
 
 # Training phase
 # if doing cross-validation, change train and validation split file name 
-python3 -m torch.distributed.launch --nproc_per_node=2 --master_port=$RANDOM ./apis/train_components.py --nw hrnet --cp $DATA_ROOT/code_test/checkpoints --conf ./configs/hrnet/fcn_hr48_512x1024_40k_cityscapes.py --bs 16 --train_split splits/train_cmp0.txt --val_split splits/val_cmp0.txt --width 640 --height 360 --distributed --iter 100000 --log_iter 10000 --eval_iter 10000 --checkpoint_iter 10000 --multi_loss --ohem --job_name hrnet
+python3 -m torch.distributed.launch --nproc_per_node=2 --master_port=$RANDOM ./apis/train_components.py --nw hrnet --cp $DATA_ROOT/code_test/checkpoints --dr $DATA_ROOT --conf ./configs/hrnet/fcn_hr48_512x1024_40k_cityscapes.py --bs 16 --train_split splits/train_cmp0.txt --val_split splits/val_cmp0.txt --width 640 --height 360 --distributed --iter 100000 --log_iter 10000 --eval_iter 10000 --checkpoint_iter 10000 --multi_loss --ohem --job_name hrnet
+python3 -m torch.distributed.launch --nproc_per_node=2 --master_port=$RANDOM ./apis/train_components.py --nw pspnet --cp $DATA_ROOT/code_test/checkpoints --dr $DATA_ROOT --conf ./configs/pspnet/pspnet_r101b-d8_512x1024_80k_cityscapes.py --bs 16 --train_split splits/train_cmp0.txt --val_split splits/val_cmp0.txt --width 640 --height 360 --distributed --iter 100000 --log_iter 10000 --eval_iter 10000 --checkpoint_iter 10000 --multi_loss --ohem --job_name pspnet
 
 # Testing phase
 # Masking out non-column components
