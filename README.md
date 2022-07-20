@@ -142,3 +142,13 @@ The code is developed under the following configurations.
 
 # Reference
 If you find the code useful, please cite the following paper.
+```
+@misc{liu2022hierarchical,
+      title={A hierarchical semantic segmentation framework for computer vision-based bridge damage detection}, 
+      author={Jingxiao Liu and Yujie Wei and Bingqing Chen},
+      year={2022},
+      eprint={2207.08878},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
+}
+```
