@@ -1,6 +1,6 @@
 # Bridge-damage-segmentation
 
-This is the code repository for the paper [A hierarchical semantic segmentation framework for computer-vision-based bridge column damage detection](https://arxiv.org/abs/2207.08878) submitted to the [IC-SHM Challenge 2021](https://sail.cive.uh.edu/ic-shm2021/). The semantic segmentation framework used in this paper leverages importance sampling, semantic mask, and multi-scale test time augmentation to achieve a 0.836 IoU for scene component segmentation and a 0.467 IoU for concrete damage segmentation on the [Tokaido Dataset](). The framework was implemented on [MMSegmentation](https://github.com/open-mmlab/mmsegmentation) using Python.
+This is the code repository for the paper [A hierarchical semantic segmentation framework for computer-vision-based bridge column damage detection](https://www.researchgate.net/publication/370467357_A_hierarchical_semantic_segmentation_framework_for_computer_vision-based_bridge_damage_detection) submitted to the [IC-SHM Challenge 2021](https://sail.cive.uh.edu/ic-shm2021/). The semantic segmentation framework used in this paper leverages importance sampling, semantic mask, and multi-scale test time augmentation to achieve a 0.836 IoU for scene component segmentation and a 0.467 IoU for concrete damage segmentation on the [Tokaido Dataset](). The framework was implemented on [MMSegmentation](https://github.com/open-mmlab/mmsegmentation) using Python.
 
 # Highlights
 
@@ -143,12 +143,5 @@ The code is developed under the following configurations.
 # Reference
 If you find the code useful, please cite the following paper.
 ```
-@misc{liu2022hierarchical,
-      title={A hierarchical semantic segmentation framework for computer vision-based bridge damage detection}, 
-      author={Jingxiao Liu and Yujie Wei and Bingqing Chen},
-      year={2022},
-      eprint={2207.08878},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV}
-}
+Liu, J., Wei, Y., Chen, B. & Noh, H. (2023). A hierarchical semantic segmentation framework for computer vision-based bridge damage detection. SMART STRUCTURES AND SYSTEMS 31(4):325-334
 ```
