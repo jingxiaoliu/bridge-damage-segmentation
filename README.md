@@ -2,6 +2,9 @@
 
 This is the code repository for the paper [A hierarchical semantic segmentation framework for computer-vision-based bridge column damage detection](https://www.researchgate.net/publication/370467357_A_hierarchical_semantic_segmentation_framework_for_computer_vision-based_bridge_damage_detection) submitted to the [IC-SHM Challenge 2021](https://sail.cive.uh.edu/ic-shm2021/). The semantic segmentation framework used in this paper leverages importance sampling, semantic mask, and multi-scale test time augmentation to achieve a 0.836 IoU for scene component segmentation and a 0.467 IoU for concrete damage segmentation on the [Tokaido Dataset](). The framework was implemented on [MMSegmentation](https://github.com/open-mmlab/mmsegmentation) using Python.
 
+If you find the code useful, please cite the following paper.
+>* Jingxiao Liu, Yujie Wei, Bingqing Chen, Hae Young Noh "A hierarchical semantic segmentation framework for computer vision-based bridge damage detection" Smart Structures and Systems, An International Journal 31.4 pp.325-334 (2023) : 325.
+
 # Highlights
 
 # Models used in the framework
@@ -139,9 +142,3 @@ The code is developed under the following configurations.
       --raw_input $IMG_DIR
       --cmp 
     ```
-
-# Reference
-If you find the code useful, please cite the following paper.
-```
-Liu, J., Wei, Y., Chen, B. & Noh, H. (2023). A hierarchical semantic segmentation framework for computer vision-based bridge damage detection. SMART STRUCTURES AND SYSTEMS 31(4):325-334
-```
